@@ -6,4 +6,4 @@ Gist に置いてるメモ系に関連するファイルは同じ Gist 内に置
 - `gists/{gist_id}/_pages_` は Pages で公開
     - パスは `gists/foo/_pages_/1.html` が `/{repository_name}/gists/foo/1.html` に対応
     - Gist ごとに公開したいものやビルド手順が違うと思うので Actions では上記ルールのみで、各フォルダでビルドして public フォルダに配置してコミットする
-    - https://0rim0.github.io/gist-resources/gists/\*\*\*
+    - https://0rim0.github.io/gist-resources/gists/***
