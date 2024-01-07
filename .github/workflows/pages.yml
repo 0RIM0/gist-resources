@@ -36,12 +36,12 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Create public files
-        # gists/{gist_id}/public を public/gists/{gist_id} へコピー
+        # gists/{gist_id}/_pages_ を public/gists/{gist_id} へコピー
         # public 以下を Pages として公開
         run: |
           mkdir -p public/gists
           for dir in gists/*/; do
-            public="$dir/public"
+            public="$dir/_pages_"
             if [ -d $public ]; then
               name=$(basename $dir)
               mv $public "public/gists/$name"
