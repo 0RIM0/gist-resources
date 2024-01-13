@@ -1,0 +1,9 @@
+{
+	"endOfLine": "lf",
+	"semi": false,
+	"useTabs": true,
+	"tabWidth": 4,
+	"printWidth": 120,
+	"singleQuote": false,
+	"trailingComma": "all"
+}
