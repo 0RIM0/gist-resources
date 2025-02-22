@@ -1,0 +1,13 @@
+{
+	"typescript": {
+		"useTabs": true,
+		"indentWidth": 4,
+		"semiColons": "asi"
+	},
+	"excludes": [
+		"**/node_modules"
+	],
+	"plugins": [
+		"https://plugins.dprint.dev/typescript-0.93.4.wasm"
+	]
+}
