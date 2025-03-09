@@ -1,0 +1,90 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-size: 14px;
+	font-family: meiryo ui;
+}
+
+input {
+	font-family: inherit;
+	font-size: inherit;
+	padding: 2px 6px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+
+	tr.error {
+		background: #fef0f0;
+	}
+
+	th {
+		background: #d0f1fd;
+	}
+
+	th,
+	td {
+		border: 1px solid #c0e1ed;
+		padding: 2px 4px;
+	}
+
+	input[type="checkbox"] {
+		width: 18px;
+		height: 18px;
+	}
+
+	.url {
+		width: 200px;
+	}
+
+	.interval-minutes {
+		width: 50px;
+	}
+}
+
+.container {
+	padding: 20px;
+	width: 640px;
+	display: flex;
+	flex-flow: column;
+	gap: 20px;
+}
+
+.range {
+	display: flex;
+	margin: auto;
+	align-items: center;
+	gap: 10px;
+
+	input {
+		width: 50px;
+	}
+}
+
+.scheduled-time {
+	margin-left: 20px;
+	color: #777;
+}
+
+.flex-both-side {
+	display: flex;
+	justify-content: space-between;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.flex-row {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.loading {
+	font-size: 5rem;
+}
