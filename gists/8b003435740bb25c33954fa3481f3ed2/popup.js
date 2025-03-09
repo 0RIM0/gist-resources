@@ -199,6 +199,7 @@ const App = () => {
 						}
 						return html`
 							<${Item}
+								key=${index}
 								value=${item}
 								onChange=${onChange}
 								onRemove=${onRemove}
