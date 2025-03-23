@@ -122,17 +122,17 @@ const load = async (url) => {
 	if (ext === "zst") {
 		await zstd.init()
 		const str = new TextDecoder().decode(zstd.decompress(new Uint8Array(buf)))
-		data = JSON.parse(str)
+		data = JSON.parse(str).gists
 	} else {
 		const str = new TextDecoder().decode(buf)
-		data = JSON.parse(str)
+		data = JSON.parse(str).gists
 	}
 	postMessage({ type: "ready" })
 }
 
 addEventListener("message", async (event) => {
 	if (event.data.load) {
-		loaded = await load(event.data.load).catch(err => {
+		loaded = load(event.data.load).catch(err => {
 			postMessage({ type: "error", error: `Failed to load file: ${event.data.load}` })
 			throw err
 		})

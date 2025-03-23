@@ -1,26 +1,26 @@
 // Gist データの作成
-// [
-//   [id, filename, created_at, text],
-//   ...
-// ]
+// {
+//   timestamp: "timestamp string",
+//   gists: [
+//     [id, filename, created_at, text],
+//     ...
+//   ]
+// }
 // の json データを出力
 // 別途圧縮
 //   zstd gist-data.json -o gist-data.zst
 
-// 多くなってくると取得量が多いので繰り返し実行するようならキャッシュさせたい
-// ローカルファイルに変換済み md を保存しておいて updated_at が更新されてたら再取得
-// json はローカルファイルから構築
-// 取得できるのは固定で created_at の降順で後から更新したのが先頭に来ない
-// API からの取得は全件行って updated_at を見る
+import fs from "node:fs"
+import path from "node:path"
+import { parseArgs } from "node:util"
 
 import { Window } from "happy-dom"
 import markdownit from "markdown-it"
-import fs from "node:fs"
 
 const md = markdownit()
 const window = new Window({ url: "https://localhost:8080" })
 
-const getGists = async function*() {
+const getGists = async function* (user) {
 	let url = `https://api.github.com/users/${user}/gists?per_page=100&page=1`
 
 	while (url) {
@@ -33,7 +33,7 @@ const getGists = async function*() {
 	}
 }
 
-const getTextFile = async (url) => {
+const getMarkdownFile = async (url) => {
 	const res = await fetch(url)
 	const body = await res.text()
 	const html = md.render(body)
@@ -52,49 +52,156 @@ const parseLink = (link_header) => {
 	)
 }
 
-const [user] = process.argv.slice(2)
-const min_date = new Date("2018-01-01")
-const max_date = new Date("2099-01-01")
-const min_text_length = 50
+const createCache = (directory) => {
+	return directory
+		? async (key, register) => {
+			const cache_file = path.join(directory, key)
+			let text
+			if (fs.existsSync(cache_file)) {
+				const buf = await fs.promises.readFile(cache_file)
+				text = buf.toString()
+			} else {
+				text = await register()
+				await fs.promises.mkdir(path.dirname(cache_file), { recursive: true })
+				await fs.promises.writeFile(cache_file, text)
+			}
+			return text
+		}
+		: (key, register) => register()
+}
 
-if (!user) {
-	console.log("user is empty")
+const validateOptions = ({ values }) => {
+	const errors = []
+	const options = {}
+
+	if (!values.user) {
+		errors.push("user is required")
+	} else {
+		options.user = values.user
+	}
+
+	const min_date = new Date(values["min-date"])
+	if (isNaN(min_date)) {
+		errors.push("min-date is invalid date")
+	} else {
+		options.min_date = min_date
+	}
+
+	const max_date = new Date(values["max-date"])
+	if (isNaN(max_date)) {
+		errors.push("max-date is invalid date")
+	} else {
+		options.max_date = max_date
+	}
+
+	if (isNaN(values["min-text-length"])) {
+		errors.push("min-text-length is invalid number")
+	} else {
+		options.min_text_length = ~~values["min-text-length"]
+	}
+
+	options.output = values.output
+	options.cache = values.cache
+
+	return [errors, options]
+}
+
+const [errors, options] = validateOptions(
+	parseArgs({
+		options: {
+			user: {
+				type: "string",
+				short: "u",
+			},
+			"min-date": {
+				type: "string",
+				default: "2018-01-01",
+			},
+			"max-date": {
+				type: "string",
+				default: "2099-12-31",
+			},
+			"min-text-length": {
+				type: "string",
+				default: "50",
+			},
+			output: {
+				type: "string",
+				short: "o",
+				default: "gist-data.json",
+			},
+			cache: {
+				type: "string",
+				short: "c",
+			},
+		}
+	})
+)
+
+if (errors.length) {
+	console.log("log:")
+	console.log(logs.map(x => "  - " + x).join("\n"))
+	console.log("Usage:")
+	console.log("  node generate.js -u <GITHUB_USERNAME> -o <OUTPUT_PATH> -c <CACHE_DIR_PATH>")
 	process.exit(1)
 }
 
-const file = fs.createWriteStream("gist-data.json")
-file.write("[")
-let first = true
+console.log("options:", options)
 
-const processed = new Set()
+const getGistFiles = async function* (options) {
+	const processed = new Set()
+	const cache = createCache(options.cache)
 
-for await (const gists of getGists()) {
-	for (const { id, files, created_at } of gists) {
-		const date_created_at = new Date(created_at)
-		if (date_created_at < min_date || max_date < date_created_at) continue
+	for await (const gists of getGists(options.user)) {
+		for (const { id, files, description, created_at, updated_at } of gists) {
+			const date_created_at = new Date(created_at)
+			if (date_created_at < options.min_date || options.max_date < date_created_at) continue
 
-		// 自身のを取得するときは通常ないはずだけど途中で Gist が追加されると
-		// 次のページに重複が出る可能性があるので一応重複判定とスキップ
-		if (processed.has(id)) continue
-		processed.add(id)
+			// 自身のを取得するときは通常ないはずだけど途中で Gist が追加されると
+			// 次のページに重複が出る可能性があるので一応重複判定とスキップ
+			if (processed.has(id)) continue
+			processed.add(id)
 
-		for (const { filename, type, raw_url } of Object.values(files)) {
-			if (type === "text/markdown") {
-				const text = await getTextFile(raw_url)
-				if (text.length < min_text_length) continue
-				if (!first) {
-					file.write(",")
+			const timestamp = updated_at.replace(/[-\/_:]/g, "")
+
+			for (const { filename, type, raw_url } of Object.values(files)) {
+				if (type === "text/markdown") {
+					const key = `${id}_${timestamp}/${filename}`
+					let text = await cache(key, () => getMarkdownFile(raw_url))
+
+					// gist の description も本文に含める
+					// 1 gist に複数の markdown ファイルがあると全てに含めることになるけど
+					// 基本は 1 ファイルだけなので気にしない
+					if (!text.startsWith(description)) {
+						text = description + " " + text
+					}
+					if (text.length < options.min_text_length) continue
+
+					yield { id, filename, created_at, text }
+					process.stdout.write(".")
 				}
-				file.write(JSON.stringify([id, filename, created_at, text]))
-				process.stdout.write(".")
-				first = false
 			}
+			process.stdout.write(":")
 		}
-		process.stdout.write(":")
 	}
 }
 
-file.write("]")
+// json format: { timestamp: "2025-01-01T00:00:00Z", gists: [] }
+const file = fs.createWriteStream(options.output)
+file.write(`{"timestamp":"${new Date().toJSON()}","gists":[`)
+
+let first = true
+
+for await (const { id, filename, created_at, text } of getGistFiles(options)) {
+	if (!first) {
+		file.write(",")
+	}
+	first = false
+
+	file.write(JSON.stringify([id, filename, created_at, text]))
+}
+
+file.write(`]}`)
 file.close()
 
 console.log("done")
