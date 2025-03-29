@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+
+<style>
+	body {
+		width: max-content;
+	}
+</style>
+
+<script type="module" src="popup.js"></script>
+
+<table>
+	<tbody>
+		<tr data-type="txt">
+			<th>テキスト</th>
+			<td><button data-action="copy">コピー</button></td>
+			<td><button data-action="save">ファイルに保存</button></td>
+		</tr>
+		<tr data-type="csv">
+			<th>CSV</th>
+			<td><button data-action="copy">コピー</button></td>
+			<td><button data-action="save">ファイルに保存</button></td>
+		</tr>
+		<tr data-type="tsv">
+			<th>TSV</th>
+			<td><button data-action="copy">コピー</button></td>
+			<td><button class="save">ファイルに保存</button></td>
+		</tr>
+		<tr data-type="json">
+			<th>JSON</th>
+			<td><button data-action="copy">コピー</button></td>
+			<td><button data-action="save">ファイルに保存</button></td>
+		</tr>
+		<tr data-type="html">
+			<th>HTML</th>
+			<td><button data-action="copy">コピー</button></td>
+			<td><button data-action="save">ファイルに保存</button></td>
+		</tr>
+	</tbody>
+</table>
