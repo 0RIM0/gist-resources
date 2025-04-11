@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "winui3webview2 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "winui3webview2 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
