@@ -49,7 +49,7 @@ var y=Object.defineProperty;var w=(n,t,e)=>t in n?y(n,t,{enumerable:!0,configura
 				<spa-router>
 					<spa-route path="/" element="page-top"></spa-route>
 					<spa-route path="/page1" element="page-one"></spa-route>
-					<spa-route path="/redirect" redirect="/page1"></spa-route>
+					<spa-route path="/redirect" redirect="page1"></spa-route>
 					<spa-route path="/page2">
 						<template>
 							<h1>page2</h1>
