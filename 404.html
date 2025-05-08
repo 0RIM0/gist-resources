@@ -26,13 +26,28 @@
 			script.replaceWith(new_script)
 		}
 	}
-	find404(location.href).then(html => {
-		if (!html) return
-		const doc = new DOMParser().parseFromString(html, "text/html")
-		document.documentElement.replaceWith(doc.documentElement)
-		executeScripts()
-	})
+	const show404 = () => document.body.hidden = false
+	find404(location.href).then(
+		html => {
+			if (!html) {
+				show404()
+				return
+			}
+			const doc = new DOMParser().parseFromString(html, "text/html")
+			document.documentElement.replaceWith(doc.documentElement)
+			executeScripts()
+		},
+		err => {
+			console.error(err)
+			show404()
+		}
+	)
 }
 </script>
 
-<div style="text-align:center;display:grid"><h1>404</h1><p>Page not found.</p></div>
+<body hidden>
+	<div style="text-align:center;display:grid">
+		<h1>404</h1>
+		<p>Page not found.</p>
+	</div>
+</body>
