@@ -19,7 +19,7 @@ customElements.define(
 				<spa-router>
 					<spa-route path="/" element="page-top"></spa-route>
 					<spa-route path="/page1" element="page-one"></spa-route>
-					<spa-route path="/redirect" redirect="/page1"></spa-route>
+					<spa-route path="/redirect" redirect="page1"></spa-route>
 					<spa-route path="/page2">
 						<template>
 							<h1>page2</h1>
