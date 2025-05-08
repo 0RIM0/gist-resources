@@ -10,8 +10,8 @@ export class StateManager extends SpaStateManager {
 
 		this.on("get-text", async (detail) => {
 			const url = {
-				text1: "/text1.txt",
-				text2: "/text2.txt",
+				text1: "text1.txt",
+				text2: "text2.txt",
 			}[detail.text]
 			const text = await fetch(url).then(res => res.text())
 			this.data.text = text

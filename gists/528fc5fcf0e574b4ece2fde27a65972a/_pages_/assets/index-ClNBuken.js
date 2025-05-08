@@ -3,21 +3,21 @@ var y=Object.defineProperty;var w=(n,t,e)=>t in n?y(n,t,{enumerable:!0,configura
 					<div>
 						<p>navigate</p>
 						<ul>
-							<li><a href="/">/</a></li>
-							<li><a href="/page1">/page1</a></li>
-							<li><a href="/redirect">/redirect</a></li>
-							<li><a href="/page2">/page2</a></li>
-							<li><a href="/params/foo">/params/foo</a></li>
+							<li><a href="">/</a></li>
+							<li><a href="page1">/page1</a></li>
+							<li><a href="redirect">/redirect</a></li>
+							<li><a href="page2">/page2</a></li>
+							<li><a href="params/foo">/params/foo</a></li>
 						</ul>
 					</div>
 					<div>
 						<p>open</p>
 						<ul>
-							<li><a href="/" target="_blank">/</a></li>
-							<li><a href="/page1" target="_blank">/page1</a></li>
-							<li><a href="/redirect" target="_blank">/redirect</a></li>
-							<li><a href="/page2" target="_blank">/page2</a></li>
-							<li><a href="/params/bar" target="_blank">/params/bar</a></li>
+							<li><a href="" target="_blank">/</a></li>
+							<li><a href="page1" target="_blank">/page1</a></li>
+							<li><a href="redirect" target="_blank">/redirect</a></li>
+							<li><a href="page2" target="_blank">/page2</a></li>
+							<li><a href="params/bar" target="_blank">/params/bar</a></li>
 						</ul>
 					</div>
 				</div>
@@ -45,7 +45,7 @@ var y=Object.defineProperty;var w=(n,t,e)=>t in n?y(n,t,{enumerable:!0,configura
 					<h1 id="title">page ???</h1>
 					<link-list></link-list>
 				</div>
-			`}update(n){const t=n.message;switch(t.type){case"routing":this.$("#title").textContent=`page ${t.params.name}`;break}}});class _ extends g{init(){super.init(),Object.assign(this.data,{text:""}),this.on("get-text",async t=>{const e={text1:"/text1.txt",text2:"/text2.txt"}[t.text],a=await fetch(e).then(s=>s.text());this.data.text=a,this.notify({type:"get-text",text:a})})}}customElements.define("my-app",class extends k{stateManager(){return new _}templateHTML(){return`
+			`}update(n){const t=n.message;switch(t.type){case"routing":this.$("#title").textContent=`page ${t.params.name}`;break}}});class _ extends g{init(){super.init(),Object.assign(this.data,{text:""}),this.on("get-text",async t=>{const e={text1:"text1.txt",text2:"text2.txt"}[t.text],a=await fetch(e).then(s=>s.text());this.data.text=a,this.notify({type:"get-text",text:a})})}}customElements.define("my-app",class extends k{stateManager(){return new _}templateHTML(){return`
 				<spa-router>
 					<spa-route path="/" element="page-top"></spa-route>
 					<spa-route path="/page1" element="page-one"></spa-route>
