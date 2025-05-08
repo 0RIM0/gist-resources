@@ -7,7 +7,7 @@ export class SpaRouter extends UpdateElement {
 		switch (message.type) {
 			case "routing":
 				{
-					const { route, params } = this.findRoute(location.pathname) ?? {}
+					const { route, params } = this.findRoute() ?? {}
 					if (route?.redirect) {
 						this.action("route-replace", route.redirect)
 						return
@@ -31,6 +31,20 @@ export class SpaRouter extends UpdateElement {
 	}
 
 	findRoute(path) {
+		if (!path) {
+			const pathname = location.pathname
+			// base タグがあるなら基準を base タグの href にする
+			if (document.querySelector("base")) {
+				const base_pathname = new URL(document.baseURI).pathname
+				if (pathname.startsWith(base_pathname)) {
+					path = pathname.slice(base_pathname.length)
+				} else {
+					path = pathname
+				}
+			} else {
+				path = pathname
+			}
+		}
 		for (const route of this.querySelectorAll("spa-route")) {
 			const matched = new URLPattern(route.path, location.origin).exec(path, location.origin)
 			if (matched) {
