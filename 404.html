@@ -1,5 +1,38 @@
 <!doctype html>
 
 <meta charset="UTF-8" />
+<script async>
+{
+	const find404 = async (url) => {
+		const parts = new URL(url).pathname.split("/")
+		while (parts.length > 1) {
+			parts[parts.length - 1] = "404.html"
+			const path = parts.join("/")
+			const res = await fetch(path)
+			if (res.status === 200) {
+				return res.text()
+			}
+			parts.pop()
+		}
+	}
+	const executeScripts = () => {
+		for (const script of [...document.scripts]) {
+			const new_script = document.createElement("script")
+			new_script.async = script.async
+			new_script.defer = script.defer
+			new_script.src = script.src
+			new_script.type = script.type
+			new_script.innerHTML = script.innerHTML
+			script.replaceWith(new_script)
+		}
+	}
+	find404(location.href).then(html => {
+		if (!html) return
+		const doc = new DOMParser().parseFromString(html, "text/html")
+		document.documentElement.replaceWith(doc.documentElement)
+		executeScripts()
+	})
+}
+</script>
 
 <div style="text-align:center;display:grid"><h1>404</h1><p>Page not found.</p></div>
