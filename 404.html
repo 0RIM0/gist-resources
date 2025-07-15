@@ -1,8 +1,7 @@
 <!doctype html>
 
 <meta charset="UTF-8" />
-<script async>
-{
+<script type="module">
 	const find404 = async (url) => {
 		const parts = new URL(url).pathname.split("/")
 		while (parts.length > 3) {
@@ -42,7 +41,6 @@
 			show404()
 		}
 	)
-}
 </script>
 
 <body hidden>
