@@ -5,7 +5,7 @@
 {
 	const find404 = async (url) => {
 		const parts = new URL(url).pathname.split("/")
-		while (parts.length > 1) {
+		while (parts.length > 3) {
 			parts[parts.length - 1] = "404.html"
 			const path = parts.join("/")
 			const res = await fetch(path)
