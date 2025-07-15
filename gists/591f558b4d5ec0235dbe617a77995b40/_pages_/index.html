@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+
+<style>
+	body {
+		margin: 0;
+	}
+	.main {
+		height: 100vh;
+		display: flex;
+		flex-flow: column;
+	}
+	.header {
+		padding: 10px;
+		border-bottom: 1px solid #ddd;
+	}
+	.stretch {
+		flex: 1;
+		display: grid;
+		justify-content: center;
+		align-content: center;
+	}
+	.date {
+		display: flex;
+		flex-flow: column;
+		width: 30vw;
+		min-width: 200px;
+		align-items: stretch;
+		gap: 20px;
+		input {
+			font-size: 200%;
+			text-align: center;
+		}
+	}
+</style>
+
+<script type="module">
+	import van from "https://cdn.jsdelivr.net/gh/vanjs-org/van/public/van-1.5.5.min.js"
+
+	const { div, input } = van.tags
+
+	const formatDate = (date) => {
+		return [date.getFullYear(), date.getMonth() + 1, date.getDate()].map(x => String(x).padStart(2, "0")).join("-")
+	}
+
+	const hToDate = (h) => {
+		// 0 ~ 360 => 1/1 ~ 1/1
+		const year = new Date().getFullYear()
+		const leap = year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0)
+		const days = leap ? 366 : 365
+		const day = ~~(h / 360 * days) + 1
+		const date = new Date(year, 0, 1)
+		date.setDate(day)
+		return formatDate(date)
+	}
+
+	const dateToH = (date) => {
+		// 1/1 ~ 1/1 => 0 ~ 360
+		const d = new Date(date + " 00:00")
+		const year = d.getFullYear()
+		const base = new Date(year, 0, 1)
+		const day = (d - base) / 1000 / 60 / 60 / 24
+		const leap = year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0)
+		const days = leap ? 366 : 365
+		return ~~(day / days * 360)
+	}
+
+	const Main = () => {
+		const default_date = formatDate(new Date())
+		const default_h = dateToH(default_date)
+
+		const h = van.state(default_h)
+		const s = van.state(90)
+		const l = van.state(80)
+		const date = van.state(default_date)
+
+		const oninput = (event) => {
+			const { name, value } = event.target
+			switch (name) {
+				case "h":
+					h.val = value
+					date.val = hToDate(value)
+					break
+				case "s":
+					s.val = value
+					break
+				case "l":
+					l.val = value
+					break
+				case "date":
+					date.val = value
+					h.val = dateToH(value)
+					break
+			}
+		}
+
+		const style = () => `background-color: hsl(${360 - h.val}, ${s.val}%, ${l.val}%)`
+
+		return div({ class: "main", oninput },
+			div({ class: "header" },
+				div("S", input({ name: "s", type: "range", min: 0, max: 100, value: s })),
+				div("L", input({ name: "l", type: "range", min: 0, max: 100, value: l })),
+			),
+			div({ class: "stretch", style },
+				div({ class: "date" },
+					input({ name: "h", type: "range", min: 0, max: 360, value: h }),
+					input({ name: "date", type: "date", value: date }),
+				)
+			)
+		)
+	}
+
+	van.add(document.body, Main())
+</script>
