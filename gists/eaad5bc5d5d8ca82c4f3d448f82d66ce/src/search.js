@@ -6,8 +6,8 @@ if (data_url) {
 	worker.postMessage({ load: data_url })
 }
 
-export let ready = false
-export let state = null
+let state = null
+let info = null
 let current_callback = null
 
 worker.addEventListener("message", (event) => {
@@ -15,7 +15,7 @@ worker.addEventListener("message", (event) => {
 	switch (event.data.type) {
 		case "ready":
 			{
-				ready = true
+				info = { length: event.data.length, timestamp: new Date(event.data.timestamp) }
 				state = { query: "", items: [], loading: false }
 				current_callback?.(state)
 			}
@@ -81,3 +81,7 @@ const debounce = (fn) => {
 export const setCallback = (callback) => current_callback = callback
 
 export const search = debounce((query) => worker.postMessage({ query }))
+
+export const getState = () => state
+
+export const getInfo = () => info

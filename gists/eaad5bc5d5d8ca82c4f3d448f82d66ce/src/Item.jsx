@@ -1,7 +1,6 @@
+import dayjs from "dayjs"
 import React from "react"
 import "./Item.css"
-
-const formatter = Intl.DateTimeFormat("ja-JP", { dateStyle: "short" })
 
 const Item = React.memo(({ item }) => {
 	const body = item.body.reduce((acc, value, index) => {
@@ -18,7 +17,7 @@ const Item = React.memo(({ item }) => {
 			<div className="head">
 				<span className="gist-id">{item.gist_id}</span>
 				<span className="filename">{item.filename}</span>
-				<span className="created-at">{formatter.format(new Date(item.created_at))}</span>
+				<span className="created-at">{dayjs(item.created_at).format("YYYY/MM/DD")}</span>
 			</div>
 			<div className="body">
 				{body}

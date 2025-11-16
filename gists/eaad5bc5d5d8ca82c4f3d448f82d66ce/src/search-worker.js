@@ -6,14 +6,15 @@ const around_chars = 20
 
 let current_query = null
 let promise = Promise.resolve()
-let loaded = null
+const { promise: loaded, resolve: resolveLoaded } = Promise.withResolvers()
 let data = null
 
 const search = async (query) => {
 	const buf = []
 	let time = Date.now()
+	const gists = data.gists
 	postMessage({ type: "search-start", query: query.raw })
-	for (let i = 0; i < data.length; i++) {
+	for (let i = 0; i < gists.length; i++) {
 		if (i % chunk_size === 0) {
 			const now = Date.now()
 			const diff = now - time
@@ -32,7 +33,7 @@ const search = async (query) => {
 				}
 			}
 		}
-		const matched = match(query, data[i])
+		const matched = match(query, gists[i])
 		if (matched) {
 			buf.push(matched)
 		}
@@ -122,20 +123,23 @@ const load = async (url) => {
 	if (ext === "zst") {
 		await zstd.init()
 		const str = new TextDecoder().decode(zstd.decompress(new Uint8Array(buf)))
-		data = JSON.parse(str).gists
+		data = JSON.parse(str)
 	} else {
 		const str = new TextDecoder().decode(buf)
-		data = JSON.parse(str).gists
+		data = JSON.parse(str)
 	}
-	postMessage({ type: "ready" })
+	postMessage({ type: "ready", length: data.gists.length, timestamp: data.timestamp })
 }
 
 addEventListener("message", async (event) => {
 	if (event.data.load) {
-		loaded = load(event.data.load).catch(err => {
-			postMessage({ type: "error", error: `Failed to load file: ${event.data.load}` })
-			throw err
-		})
+		load(event.data.load).then(
+			resolveLoaded,
+			err => {
+				postMessage({ type: "error", error: `Failed to load file: ${event.data.load}` })
+				throw err
+			},
+		)
 	} else if (event.data.query != null) {
 		searchNext(event.data.query)
 	}

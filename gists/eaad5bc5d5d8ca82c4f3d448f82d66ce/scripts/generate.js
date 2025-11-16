@@ -20,7 +20,7 @@ import markdownit from "markdown-it"
 const md = markdownit()
 const window = new Window({ url: "https://localhost:8080" })
 
-const getGists = async function* (user) {
+const getGists = async function*(user) {
 	let url = `https://api.github.com/users/${user}/gists?per_page=100&page=1`
 
 	while (url) {
@@ -134,13 +134,13 @@ const [errors, options] = validateOptions(
 				type: "string",
 				short: "c",
 			},
-		}
-	})
+		},
+	}),
 )
 
 if (errors.length) {
 	console.log("log:")
-	console.log(logs.map(x => "  - " + x).join("\n"))
+	console.log(errors.map(x => "  - " + x).join("\n"))
 	console.log("Usage:")
 	console.log("  node generate.js -u <GITHUB_USERNAME> -o <OUTPUT_PATH> -c <CACHE_DIR_PATH>")
 	process.exit(1)
@@ -148,7 +148,7 @@ if (errors.length) {
 
 console.log("options:", options)
 
-const getGistFiles = async function* (options) {
+const getGistFiles = async function*(options) {
 	const processed = new Set()
 	const cache = createCache(options.cache)
 
