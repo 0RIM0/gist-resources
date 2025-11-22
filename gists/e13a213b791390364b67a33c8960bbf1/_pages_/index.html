@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.11.1/sha256.min.js"></script>
+<script type="module">
+	import { html, render } from "https://esm.sh/lit-html@3.3.1"
+	import { live } from "https://esm.sh/lit-html@3.3.1/directives/live.js"
+
+	const results = []
+
+	const calcHash = async (file) => {
+		const hash = sha256.create()
+		for await (const chunk of file.stream()) {
+			// chunk は最大 Uint8Array(65536) で分割されてる
+			hash.update(chunk)
+		}
+		return hash.hex()
+	}
+
+	const onInput = (event) => {
+		for (const file of event.target.files) {
+			const result = { filename: file.name, sha256: "..." }
+			results.push(result)
+			calcHash(file).catch(err => err.message).then((message) => {
+				result.sha256 = message
+				rerender()
+			})
+		}
+		rerender()
+	}
+
+	const rerender = () => {
+		render(html`
+			<input type="file" multiple .value=${live(null)} @input=${onInput}>
+
+			<table>
+				<thead>
+					<tr>
+						<th>Filename</th>
+						<th>SHA-256</th>
+					</tr>
+				</thead>
+				<tbody>
+					${results.map(item => {
+						return html`
+							<tr>
+								<td>${item.filename}</td>
+								<td>${item.sha256}</td>
+							</tr>
+						`
+					})}
+				</tbody>
+			</table>
+		`, document.getElementById("app"))
+	}
+
+	rerender()
+</script>
+<style>
+	table {
+		border-collapse: collapse;
+		margin: 10px;
+	}
+	th, td {
+		padding: 4px 12px;
+		border: 1px solid silver;
+	}
+</style>
+
+<div id="app"></div>
