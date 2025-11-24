@@ -1,0 +1,48 @@
+/* Alpine.jsの初期化が終わるまで非表示にする属性 */
+[x-cloak] {
+	display: none !important;
+}
+
+/* ドラッグ＆ドロップのコンテナ */
+.drop-container {
+	min-height: 100vh;
+	transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+/* ドラッグ中の視覚フィードバック */
+.is-dragging {
+	outline-offset: -12px;
+	outline: 5px dashed #fcc;
+}
+
+/* ドロップを促すメッセージのスタイル */
+.drop-message {
+	border: 3px dashed #ccc;
+	padding: 2rem 3rem;
+	border-radius: 0.5rem;
+	background-color: #f8f9fa;
+}
+
+.chunks {
+	overflow-wrap: break-word;
+	word-break: break-all;
+}
+
+.chunks .accordion-button {
+	color: #222;
+}
+
+.chunks .accordion-body,
+.chunks :is(th, td) {
+	color: #455;
+}
+
+.chunks th {
+	width: 320px;
+}
+
+.img-preview {
+	max-height: 50vh;
+	object-fit: contain;
+	background-color: #f3f3f3;
+}

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PNG Chunks</title>
+
+	<!-- Bootstrap (CSS Framework) from CDN -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="m-0">
+
+	<!-- 
+	Drop Zone Area
+	- Alpine.jsの`fileDrop`コンポーネントを初期化
+	- ドラッグ＆ドロップイベントをウィンドウ全体で捕捉
+	-->
+	<div x-data="fileDrop" @dragover.prevent @dragenter.prevent="isDragging = true"
+		@dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)" :class="{'is-dragging': isDragging}"
+		class="drop-container position-fixed top-0 start-0 vw-100 vh-100">
+		<!-- Initial or Error Message -->
+		<template x-if="status !== 'success'">
+			<div class="vh-100 d-flex align-items-center justify-content-center" x-cloak>
+				<div class="text-center drop-message">
+					<h1 class="display-6">
+						PNG ファイルをドロップしてください
+					</h1>
+					<p class="mt-3 mb-0 text-danger" x-show="message !== ''" x-text="message"></p>
+				</div>
+			</div>
+		</template>
+
+		<!-- Success Message and Data Display -->
+		<div x-show="status === 'success'" class="container-fluid p-4 h-100" :class="{'pe-none': isDragging}" x-cloak>
+			<div class="row g-4 h-100">
+				<!-- Left Column: Image Preview and File Info -->
+				<div class="col-md-4">
+					<div class="card">
+						<img :src="imageUrl" class="card-img-top img-preview" alt="Image preview">
+						<div class="card-body">
+							<h5 class="card-title">ファイル情報</h5>
+							<ul class="list-group list-group-flush">
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<strong>ファイル名:</strong>
+									<span x-text="droppedFile?.name"></span>
+								</li>
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<strong>ファイルサイズ:</strong>
+									<span x-text="formatBytes(droppedFile?.size)"></span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right Column: Chunk Data -->
+				<div class="col-md-8 chunks" style="max-height: 100%; overflow-y: auto;">
+					<div class="accordion" id="chunkAccordion">
+						<template x-for="(chunk, index) in metadata" :key="index">
+							<div class="accordion-item">
+								<h2 class="accordion-header" :id="'heading-' + index">
+									<button class="accordion-button" type="button" data-bs-toggle="collapse"
+										:data-bs-target="'#collapse-' + index" aria-expanded="true"
+										:aria-controls="'collapse-' + index" :style="{
+											'background-color':
+												chunk.type === 'IHDR' ? '#e7f5fe' :
+												chunk.type === 'IDAT' ? '#e6fcf5' :
+												chunk.type === 'IEND' ? '#f8f9fa' : '#fdf3e1'
+										}">
+										<div class="d-flex justify-content-between align-items-center w-100">
+											<span x-text="chunk.type"></span>
+											<span x-text="formatBytes(chunk.length)" class="mx-4 small"></span>
+										</div>
+									</button>
+								</h2>
+								<!-- 'show'クラスを追加して、デフォルトで開くようにする -->
+								<div :id="'collapse-' + index" class="accordion-collapse collapse show"
+									:aria-labelledby="'heading-' + index">
+									<div class="accordion-body">
+										<!-- IHDR (Image Header) Chunk -->
+										<template x-if="chunk.type === 'IHDR'">
+											<table class="table table-sm m-0 table-bordered">
+												<tbody>
+													<tr>
+														<th>幅 (Width)</th>
+														<td x-text="chunk.ihdr.width"></td>
+													</tr>
+													<tr>
+														<th>高さ (Height)</th>
+														<td x-text="chunk.ihdr.height"></td>
+													</tr>
+													<tr>
+														<th>ビット深度 (Bit Depth)</th>
+														<td x-text="chunk.ihdr.bitDepth"></td>
+													</tr>
+													<tr>
+														<th>カラータイプ (Color Type)</th>
+														<td x-text="chunk.ihdr.colorType"></td>
+													</tr>
+													<tr>
+														<th>圧縮方式 (Compression Method)</th>
+														<td x-text="chunk.ihdr.compressionMethod"></td>
+													</tr>
+													<tr>
+														<th>フィルター方式 (Filter Method)</th>
+														<td x-text="chunk.ihdr.filterMethod"></td>
+													</tr>
+													<tr>
+														<th>インターレース方式 (Interlace Method)</th>
+														<td x-text="chunk.ihdr.interlaceMethod"></td>
+													</tr>
+												</tbody>
+											</table>
+										</template>
+
+										<!-- tEXt, iTXt, zTXt -->
+										<template x-if="chunk.text != null">
+											<table class="table table-sm m-0 table-bordered">
+												<tbody>
+													<tr>
+														<th>キーワード</th>
+														<td x-text="chunk.text.keyword"></td>
+													</tr>
+													<tr>
+														<th>テキスト</th>
+														<td x-text="chunk.text.text"></td>
+													</tr>
+													<tr x-show="chunk.type === 'iTXt'">
+														<th>言語 (Language Tag)</th>
+														<td x-text="chunk.text.langTag"></td>
+													</tr>
+													<tr x-show="chunk.type === 'iTXt'">
+														<th>翻訳済みキーワード (Translated Keyword)</th>
+														<td x-text="chunk.text.transKeyword"></td>
+													</tr>
+													<tr x-show="chunk.type === 'iTXt'">
+														<th>圧縮フラグ (Compression Flag)</th>
+														<td x-text="chunk.text.compressionFlag ? 'Yes' : 'No'"></td>
+													</tr>
+												</tbody>
+											</table>
+										</template>
+
+										<!-- PLTE -->
+										<template x-if="chunk.type === 'PLTE'">
+											<div class="d-flex flex-wrap" style="gap: 1px;">
+												<template x-for="(color, i) in chunk.palette" :key="i">
+													<div :style="`width: 10px; height: 10px; background-color: rgb(${color.r}, ${color.g}, ${color.b})`"
+														:title="`Index ${i}: rgb(${color.r}, ${color.g}, ${color.b})`">
+													</div>
+												</template>
+											</div>
+										</template>
+
+										<!-- tRNS -->
+										<template x-if="chunk.type === 'tRNS'">
+											<table class="table table-sm m-0 table-bordered">
+												<tbody>
+													<tr x-show="chunk.transparency.paletteAlpha !== undefined">
+														<th>Palette Alphas</th>
+
+														<td>
+															<div class="d-flex flex-wrap" style="gap: 5px;">
+																<template
+																	x-for="(alpha, i) in chunk.transparency.paletteAlpha"
+																	:key="i">
+																	<div class="alpha-box"
+																		:style="`opacity: ${alpha / 255}`"
+																		:title="`Index ${i}: ${alpha}`">
+																	</div>
+																</template>
+															</div>
+														</td>
+													</tr>
+													<tr x-show="chunk.transparency.gray !== undefined">
+														<th>Transparent Gray Level</th>
+														<td x-text="chunk.transparency.gray"></td>
+													</tr>
+													<tr x-show="chunk.transparency.rgb !== undefined">
+														<th>Transparent Color</th>
+														<td>
+															<div class="color-box"
+																:style="`background-color: rgb(${chunk.transparency.rgb.r}, ${chunk.transparency.rgb.g}, ${chunk.transparency.rgb.b})`">
+															</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</template>
+
+										<!-- iCCP -->
+										<template x-if="chunk.type === 'iCCP'">
+											<table class="table table-sm m-0 table-bordered">
+												<tbody>
+													<tr>
+														<th>Keyword</th>
+														<td x-text="chunk.profile.keyword"></td>
+													</tr>
+													<tr>
+														<th>Device Class</th>
+														<td x-text="chunk.profile.deviceClass"></td>
+													</tr>
+													<tr>
+														<th>Description</th>
+														<td x-text="chunk.profile.description"></td>
+													</tr>
+													<tr>
+														<th>Profile Size</th>
+														<td x-text="chunk.profile.profileSize"></td>
+													</tr>
+												</tbody>
+											</table>
+										</template>
+
+										<!-- pHYs -->
+										<template x-if="chunk.type === 'pHYs'">
+											<table class="table table-sm m-0 table-bordered">
+												<tbody>
+													<tr>
+														<th>Pixels Per Unit (X axis)</th>
+														<td x-text="chunk.phys.ppuX"></td>
+													</tr>
+													<tr>
+														<th>Pixels Per Unit (Y axis)</th>
+														<td x-text="chunk.phys.ppuY"></td>
+													</tr>
+													<tr>
+														<th>Unit</th>
+														<td x-text="chunk.phys.unit">
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</template>
+
+										<!-- tIME -->
+										<template x-if="chunk.type === 'tIME'">
+											<p class="mb-0" x-text="chunk.time"></p>
+										</template>
+
+										<!-- gAMA -->
+										<template x-if="chunk.type === 'gAMA'">
+											<p class="mb-0" x-text="chunk.gamma"></p>
+										</template>
+
+										<!-- cHRM -->
+										<template x-if="chunk.type === 'cHRM'">
+											<table class="table table-sm m-0 table-bordered">
+												<tbody>
+													<tr>
+														<th>White Point</th>
+														<td
+															x-text="`x: ${chunk.chromaticities.whitePointX / 100000}, y: ${chunk.chromaticities.whitePointY / 100000}`">
+														</td>
+													</tr>
+													<tr>
+														<th>Red</th>
+														<td
+															x-text="`x: ${chunk.chromaticities.redX / 100000}, y: ${chunk.chromaticities.redY / 100000}`">
+														</td>
+													</tr>
+													<tr>
+														<th>Green</th>
+														<td
+															x-text="`x: ${chunk.chromaticities.greenX / 100000}, y: ${chunk.chromaticities.greenY / 100000}`">
+														</td>
+													</tr>
+													<tr>
+														<th>Blue</th>
+														<td
+															x-text="`x: ${chunk.chromaticities.blueX / 100000}, y: ${chunk.chromaticities.blueY / 100000}`">
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</template>
+
+										<!-- sRGB -->
+										<template x-if="chunk.type === 'sRGB'">
+											<table class="table table-sm m-0 table-bordered">
+												<tbody>
+													<tr>
+														<th>Rendering Intent</th>
+														<td x-text="chunk.renderingIntent"></td>
+													</tr>
+												</tbody>
+											</table>
+										</template>
+
+										<!-- eXIf -->
+										<template x-if="chunk.type === 'eXIf'">
+											<pre class="mb-0" x-text="JSON.stringify(chunk.exif, null, 4)"></pre>
+										</template>
+
+										<!-- IDAT (Image Data) Chunk -->
+										<template x-if="chunk.type === 'IDAT'">
+											<p class="mb-0">画像データ</p>
+										</template>
+
+										<!-- IEND (Image End) Chunk -->
+										<template x-if="chunk.type === 'IEND'">
+											<p class="mb-0">データなし</p>
+										</template>
+
+										<!-- Error -->
+										<template x-if="chunk.error !== undefined">
+											<p class="mb-0 tex-danger" x-text="chunk.error"></p>
+										</template>
+									</div>
+								</div>
+							</div>
+						</template>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap (JS) -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+		crossorigin="anonymous"></script>
+	<!-- Load the application entry point as a module.
+		The browser will handle importing all dependencies. 
+		Alpine.jsの初期化ロジックもここに含まれます。
+	-->
+	<script src="exif.js"></script>
+	<script type="module" src="main.js"></script>
+
+</body>
+
+</html>
