@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>sync md create/view</title>
+	<style>
+		body {
+			height: 100vh;
+			display: flex;
+			flex-flow: column;
+			background-color: #ffefe6;
+			font-family: sans-serif;
+			margin: 0;
+		}
+
+		header {
+			flex: none;
+			background-color: #fff;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			padding: 10px 40px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			height: 50px;
+		}
+
+		header .buttons {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		header button {
+			color: #333;
+			background-color: #f4f4f4;
+			padding: 8px 16px;
+			border-radius: 5px;
+			font-size: 14px;
+			border: 1px solid #ddd;
+			transition: background-color 0.3s, color 0.3s;
+		}
+
+		header button.active {
+			background-color: #f9996a;
+			color: #fcfcfc;
+			border-color: #0002;
+		}
+
+		header a {
+			text-decoration: none;
+			color: #333;
+			background-color: #f4f4f4;
+			padding: 8px 16px;
+			border-radius: 5px;
+			font-size: 14px;
+			border: 1px solid #ddd;
+		}
+
+		.contents {
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			gap: 40px;
+			padding: 40px;
+		}
+
+		[hidden] {
+			display: none !important;
+		}
+
+		.box {
+			width: 50%;
+			max-width: 900px;
+			background: white;
+		}
+
+		.box textarea {
+			width: 100%;
+			height: 100%;
+			display: block;
+			resize: none;
+			border: 1px solid #ddd;
+			margin: 0;
+			padding: 8px 12px;
+			line-height: 1.4;
+			box-sizing: border-box;
+		}
+
+		.box iframe {
+			width: 100%;
+			height: 100%;
+			display: block;
+			border: 1px solid #ddd;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+
+<body>
+
+	<header>
+		<div class="buttons">
+			<a target="_blank" href="readme.md">❓️</a>
+		</div>
+		<div class="buttons">
+			<button id="toggle-source-display" class="active">ソース表示切り替え</button>
+			<button id="toggle-source-update" class="active">ソースファイルへ反映</button>
+			<button id="sync">同期</button>
+		</div>
+	</header>
+
+	<div class="contents">
+		<div id="source-box" class="box">
+			<textarea id="source" disabled></textarea>
+		</div>
+		<div id="preview-box" class="box">
+			<iframe id="preview-frame" src="about:blank"></iframe>
+		</div>
+	</div>
+
+	<script type="module">
+		import markdownit from "https://cdn.jsdelivr.net/npm/markdown-it@14.1.1/+esm"
+		const md = markdownit({
+			html: true,
+		})
+
+		const toggle_source_display_btn = document.getElementById("toggle-source-display")
+		const toggle_source_update_btn = document.getElementById("toggle-source-update")
+		const source_box = document.getElementById("source-box")
+		const sync_btn = document.getElementById("sync")
+		const source_textarea = document.getElementById("source")
+		const preview_frame = document.getElementById("preview-frame")
+
+		let source_file_handle = null
+		let output_file_handle = null
+
+		const debounce = (fn, delay) => {
+			let timeout = null
+			let last_exec = 0
+			return (...args) => {
+				if (timeout) return
+				const run = () => {
+					last_exec = Date.now()
+					timeout = null
+					fn(...args)
+				}
+
+				const now = Date.now()
+				if (now - last_exec >= delay) {
+					run()
+				} else {
+					timeout = setTimeout(run, delay)
+				}
+			}
+		}
+		const debouncedWriteBack = debounce((elem) => writeBack(elem.value), 1000)
+		const debouncedOnUpdateSourceFile = debounce(() => onUpdateSourceFile(), 1000)
+
+		const wrapDisposable = (obj, method, async_method) => {
+			return {
+				value: obj,
+				[Symbol.dispose]: () => {
+					if (obj[Symbol.dispose]) {
+						obj[Symbol.dispose]()
+					} else if (method && obj[method]) {
+						obj[method]()
+					}
+				},
+				[Symbol.asyncDispose]: async () => {
+					if (obj[Symbol.asyncDispose]) {
+						await obj[Symbol.asyncDispose]()
+					} else if (async_method && obj[async_method]) {
+						await obj[async_method]()
+					}
+				},
+			}
+		}
+
+		const template_promise = fetch("./template.html").then(res => res.text())
+
+		toggle_source_display_btn.addEventListener("click", () => {
+			source_box.hidden = !toggle_source_display_btn.classList.toggle("active")
+		})
+
+		toggle_source_update_btn.addEventListener("click", () => {
+			source_textarea.readOnly = !toggle_source_update_btn.classList.toggle("active")
+		})
+
+		source_textarea.addEventListener("input", (event) => {
+			const enabled = toggle_source_update_btn.classList.contains("active")
+			if (!enabled) return
+			debouncedWriteBack(event.target)
+		})
+
+		sync_btn.addEventListener("click", async () => {
+			const active = !sync_btn.classList.contains("active")
+
+			if (active) {
+				await syncStart()
+			} else {
+				syncEnd()
+			}
+		})
+
+		const observer = new FileSystemObserver(async (records) => {
+			// 変換の流れ
+			//   source_file <==> textarea ==(html)==> output_file/preview
+			// 
+			// textarea の変更時は source_file へ writeBack で書き込んでから
+			// source_file ==> textarea の流れで output_file/preview へ反映する
+
+			const removed = records.some(r => r.type === "disappeared")
+			const edited = records.some(r => r.type === "modified")
+
+			if (removed) {
+				warn("ファイルが削除または移動されました")
+				await syncEnd()
+			} else if (edited) {
+				debouncedOnUpdateSourceFile()
+			} else {
+				warn("予期しないファイルの変化を検知しました", { records })
+			}
+		})
+
+		const onUpdateSourceFile = async () => {
+			if (!source_file_handle) {
+				warn("ソースファイルハンドルがみつかりません in onUpdateSourceFile")
+				return
+			}
+			const file = await source_file_handle.getFile()
+			const text = await file.text()
+			await update(text)
+		}
+
+		const update = async (text) => {
+			source_textarea.value = text
+			const template = await template_promise
+			const html = template.replace("{CONTENTS}", convert(text))
+			if (output_file_handle) {
+				await writeFile(output_file_handle, html)
+			} else {
+				warn("出力ファイルハンドルがみつかりません in update")
+			}
+			replacePreview(new Blob([html], { type: "text/html" }))
+		}
+
+		const convert = (text) => {
+			return md.render(text)
+		}
+
+		const replacePreview = (file) => {
+			if (preview_frame.src) {
+				URL.revokeObjectURL(preview_frame.src)
+			}
+			preview_frame.src = file ? URL.createObjectURL(file) : "about:blank"
+		}
+
+		const writeFile = async (handle, text) => {
+			await using disposable = wrapDisposable(await handle.createWritable(), null, "close")
+			const writable = disposable.value
+			await writable.write(text)
+		}
+
+		const writeBack = async (text) => {
+			if (!source_file_handle) {
+				warn("ソースファイルハンドルがみつかりません in writeBack")
+				return
+			}
+			await writeFile(source_file_handle, text)
+		}
+
+		const syncStart = async () => {
+			try {
+				[source_file_handle] = await window.showOpenFilePicker({
+					types: [{
+						description: "Markdown Files",
+						accept: {
+							"text/plain": [".md"],
+						},
+					}],
+					multiple: false,
+				})
+
+				output_file_handle = await window.showSaveFilePicker({
+					suggestedName: "page.html",
+					types: [{
+						description: "HTML Files",
+						accept: { "text/html": [".html"] },
+					}],
+				})
+
+				await observer.observe(source_file_handle)
+
+				await onUpdateSourceFile()
+				source_textarea.disabled = false
+				sync_btn.textContent = "終了"
+				sync_btn.classList.add("active")
+			} catch (error) {
+				syncEnd()
+				if (error instanceof DOMException && error.name === "AbortError") {
+					console.log("キャンセルされました")
+					return
+				}
+				console.error("ファイルの読み込み中にエラーが発生しました", error)
+				alert("ファイルの読み込み中にエラーが発生しました")
+			}
+		}
+
+		const syncEnd = () => {
+			observer.disconnect()
+			source_file_handle = null
+			output_file_handle = null
+			source_textarea.value = ""
+			replacePreview(null)
+			source_textarea.disabled = true
+			sync_btn.textContent = "同期"
+			sync_btn.classList.remove("active")
+		}
+
+		const warn = (msg, options) => {
+			console.warn(msg, options)
+		}
+	</script>
+</body>
+
+</html>
