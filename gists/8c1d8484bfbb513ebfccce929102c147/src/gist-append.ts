@@ -153,14 +153,17 @@ export class GistAppend extends LitElement {
 				throw new Error(`ファイルが省略されています ${filename}`, { cause: file })
 			}
 
-			const is_continue = await ConfirmDialog.openConfirm(html`
-				<p>
-					<b>${filename}</b> の Gist を更新しますか？<br />
-					セパレーター<b>${this._separator ? "あり" : "なし"}</b><br />
-					既存ファイル<b>${file ? "あり" : "なし"}</b><br />
-					最終更新: <b>${dayjs(gist.body.updated_at).format("YYYY/MM/DD HH:mm:ss")}</b>
-				</p>
-			`)
+			const is_continue = await ConfirmDialog.openConfirm(
+				html`
+					<p>
+						<b>${filename}</b> の Gist を更新しますか？<br />
+						セパレーター<b>${this._separator ? "あり" : "なし"}</b><br />
+						既存ファイル<b>${file ? "あり" : "なし"}</b><br />
+						最終更新: <b>${dayjs(gist.body.updated_at).format("YYYY/MM/DD HH:mm:ss")}</b>
+					</p>
+				`,
+				"確認",
+			)
 			if (!is_continue) {
 				return
 			}
@@ -172,14 +175,23 @@ export class GistAppend extends LitElement {
 				throw new Error(`更新に失敗しました (${result.status})`, { cause: result })
 			}
 
-			await ConfirmDialog.openAlert("更新しました")
+			await ConfirmDialog.openAlert(
+				html`
+					<p>更新しました</p>
+					<p><a href="${gist.body.html_url}" target="_blank">${gist.body.html_url}</a></p>
+				`,
+				"成功",
+			)
 		} catch (err) {
 			const error = err as Error
 			console.error(error, error.cause)
-			await ConfirmDialog.openAlert(html`
-				<p>エラーが発生しました</p>
-				<fluent-textarea appearance="filled-darker" .value=${error.message} block readonly></fluent-textarea>
-			`)
+			await ConfirmDialog.openAlert(
+				html`
+					<p>エラーが発生しました</p>
+					<fluent-textarea appearance="filled-darker" .value=${error.message} block readonly></fluent-textarea>
+				`,
+				"エラー",
+			)
 		}
 	}
 

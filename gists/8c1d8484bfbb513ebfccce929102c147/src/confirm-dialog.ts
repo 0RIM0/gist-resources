@@ -5,16 +5,34 @@ import type { Dialog as FluentDialog } from "@fluentui/web-components"
 
 @customElement("confirm-dialog")
 export class ConfirmDialog extends LitElement {
-	static styles = [common_style, css``]
+	static styles = [
+		common_style,
+		css`
+			fluent-dialog-body {
+				word-break: break-all;
+				overflow-wrap: break-all;
+			}
+		`,
+	]
 
 	@property() cancelable = true
+	@property() title = ""
 	@property() message: string | HTMLTemplateResult = ""
 
 	@query("#dialog") dialog!: FluentDialog
 
-	private static async _open({ cancelable, message }: { cancelable: boolean; message: string | HTMLTemplateResult }) {
+	private static async _open({
+		cancelable,
+		title,
+		message,
+	}: {
+		cancelable: boolean
+		title: string
+		message: string | HTMLTemplateResult
+	}) {
 		const elem = new this()
 		elem.cancelable = cancelable
+		elem.title = title
 		elem.message = message
 		document.body.append(elem)
 		await elem.updateComplete
@@ -31,12 +49,12 @@ export class ConfirmDialog extends LitElement {
 		})
 	}
 
-	static async openAlert(message: string | HTMLTemplateResult) {
-		return this._open({ cancelable: false, message })
+	static async openAlert(message: string | HTMLTemplateResult, title: string = "") {
+		return this._open({ cancelable: false, message, title })
 	}
 
-	static async openConfirm(message: string | HTMLTemplateResult) {
-		return this._open({ cancelable: true, message })
+	static async openConfirm(message: string | HTMLTemplateResult, title: string = "") {
+		return this._open({ cancelable: true, message, title })
 	}
 
 	show() {
@@ -67,7 +85,7 @@ export class ConfirmDialog extends LitElement {
 		return html`
 			<fluent-dialog id="dialog" aria-label="Actions" type="alert" @toggle=${this._handleToggle}>
 				<fluent-dialog-body>
-					<h2 slot="title">Actions</h2>
+					<h2 slot="title">${this.title}</h2>
 					<div>${this.message}</div>
 					<fluent-button slot="action" appearance="primary" @click=${this._handleClickOK}> OK </fluent-button>
 					<fluent-button slot="action" ?hidden=${!this.cancelable} @click=${this._handleClickCancel}>

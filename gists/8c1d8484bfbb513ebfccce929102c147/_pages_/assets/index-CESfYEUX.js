@@ -1780,10 +1780,15 @@ This usually means:`,`  1. The server-rendered HTML doesn't match the client tem
 			<div class="container">
 				<div class="preview">${Is(Rd.render(this.value))}</div>
 			</div>
-		`}};H([bs()],zd.prototype,`value`,void 0),zd=H([_s(`markdown-preview`)],zd);var Bd=class extends hs{constructor(...e){super(...e),this.cancelable=!0,this.message=``}static{this.styles=[ws,fo``]}static async _open({cancelable:e,message:t}){let n=new this;return n.cancelable=e,n.message=t,document.body.append(n),await n.updateComplete,n.show(),new Promise(e=>{n.addEventListener(`close`,t=>{e(t.detail),setTimeout(()=>{n.remove()},1500)})})}static async openAlert(e){return this._open({cancelable:!1,message:e})}static async openConfirm(e){return this._open({cancelable:!0,message:e})}show(){this.dialog.show()}hide(){this.dialog.hide()}_handleToggle(e){e.detail.newState===`closed`&&this.dispatchEvent(new CustomEvent(`close`,{detail:null}))}_handleClickOK(){this.dispatchEvent(new CustomEvent(`close`,{detail:!0})),this.hide()}_handleClickCancel(){this.dispatchEvent(new CustomEvent(`close`,{detail:!1})),this.hide()}render(){return Zo`
+		`}};H([bs()],zd.prototype,`value`,void 0),zd=H([_s(`markdown-preview`)],zd);var Bd=class extends hs{constructor(...e){super(...e),this.cancelable=!0,this.title=``,this.message=``}static{this.styles=[ws,fo`
+			fluent-dialog-body {
+				word-break: break-all;
+				overflow-wrap: break-all;
+			}
+		`]}static async _open({cancelable:e,title:t,message:n}){let r=new this;return r.cancelable=e,r.title=t,r.message=n,document.body.append(r),await r.updateComplete,r.show(),new Promise(e=>{r.addEventListener(`close`,t=>{e(t.detail),setTimeout(()=>{r.remove()},1500)})})}static async openAlert(e,t=``){return this._open({cancelable:!1,message:e,title:t})}static async openConfirm(e,t=``){return this._open({cancelable:!0,message:e,title:t})}show(){this.dialog.show()}hide(){this.dialog.hide()}_handleToggle(e){e.detail.newState===`closed`&&this.dispatchEvent(new CustomEvent(`close`,{detail:null}))}_handleClickOK(){this.dispatchEvent(new CustomEvent(`close`,{detail:!0})),this.hide()}_handleClickCancel(){this.dispatchEvent(new CustomEvent(`close`,{detail:!1})),this.hide()}render(){return Zo`
 			<fluent-dialog id="dialog" aria-label="Actions" type="alert" @toggle=${this._handleToggle}>
 				<fluent-dialog-body>
-					<h2 slot="title">Actions</h2>
+					<h2 slot="title">${this.title}</h2>
 					<div>${this.message}</div>
 					<fluent-button slot="action" appearance="primary" @click=${this._handleClickOK}> OK </fluent-button>
 					<fluent-button slot="action" ?hidden=${!this.cancelable} @click=${this._handleClickCancel}>
@@ -1791,7 +1796,7 @@ This usually means:`,`  1. The server-rendered HTML doesn't match the client tem
 					</fluent-button>
 				</fluent-dialog-body>
 			</fluent-dialog>
-		`}};H([bs()],Bd.prototype,`cancelable`,void 0),H([bs()],Bd.prototype,`message`,void 0),H([Cs(`#dialog`)],Bd.prototype,`dialog`,void 0),Bd=H([_s(`confirm-dialog`)],Bd);var Vd=class extends hs{constructor(...e){super(...e),this._markdown=``,this._token=localStorage.getItem(`token`)||``,this._gist_id=localStorage.getItem(`gist_id`)||``,this._filename_type=`month-group`,this._filename_rule=``,this._separator=!0}static{this.styles=[ws,fo`
+		`}};H([bs()],Bd.prototype,`cancelable`,void 0),H([bs()],Bd.prototype,`title`,void 0),H([bs()],Bd.prototype,`message`,void 0),H([Cs(`#dialog`)],Bd.prototype,`dialog`,void 0),Bd=H([_s(`confirm-dialog`)],Bd);var Vd=class extends hs{constructor(...e){super(...e),this._markdown=``,this._token=localStorage.getItem(`token`)||``,this._gist_id=localStorage.getItem(`gist_id`)||``,this._filename_type=`month-group`,this._filename_rule=``,this._separator=!0}static{this.styles=[ws,fo`
 			.layout {
 				display: flex;
 				flex-direction: column;
@@ -1865,16 +1870,19 @@ This usually means:`,`  1. The server-rendered HTML doesn't match the client tem
 				}
 			}
 		`]}_handleMarkdownChange(e){this._markdown=e.detail.value}_handleInputChange(e){let t=e.target;switch(t.name||t.getAttribute(`name`)){case`token`:this._token=t.value;break;case`gist-id`:this._gist_id=t.value;break;case`filename-type`:this._filename_type=t.value;break;case`filename-rule`:this._filename_rule=t.value;break;case`separator`:this._separator=t.checked;break}}_cancelEvent(e){e.stopPropagation()}async _handlePost(){try{localStorage.setItem(`token`,this._token),localStorage.setItem(`gist_id`,this._gist_id);let e=await Es(this._token),t=await Ds(this._gist_id);if(t.status!==200||e.status!==200)throw Error(`Gist の取得に失敗しました`,{cause:{gist:t,me:e}});if(e.body.login!==t.body.owner.login)throw Error(`Token のユーザーと Gist のユーザーが異なります "${e.body.login}" and "${t.body.owner.login}"`,{cause:{gist:t,me:e}});let n=Object.keys(t.body.files),r=ks(this._filename_type,this._filename_rule,n),i=t.body.files[r];if(i?.truncated)throw Error(`ファイルが省略されています ${r}`,{cause:i});if(!await Bd.openConfirm(Zo`
-				<p>
-					<b>${r}</b> の Gist を更新しますか？<br />
-					セパレーター<b>${this._separator?`あり`:`なし`}</b><br />
-					既存ファイル<b>${i?`あり`:`なし`}</b><br />
-					最終更新: <b>${(0,Ts.default)(t.body.updated_at).format(`YYYY/MM/DD HH:mm:ss`)}</b>
-				</p>
-			`))return;let a=As(n.includes(r)?i.content:``,this._markdown,this._separator),o=await Os(this._token,this._gist_id,r,a);if(o.status!==200)throw Error(`更新に失敗しました (${o.status})`,{cause:o});await Bd.openAlert(`更新しました`)}catch(e){let t=e;console.error(t,t.cause),await Bd.openAlert(Zo`
-				<p>エラーが発生しました</p>
-				<fluent-textarea appearance="filled-darker" .value=${t.message} block readonly></fluent-textarea>
-			`)}}render(){return Zo`
+					<p>
+						<b>${r}</b> の Gist を更新しますか？<br />
+						セパレーター<b>${this._separator?`あり`:`なし`}</b><br />
+						既存ファイル<b>${i?`あり`:`なし`}</b><br />
+						最終更新: <b>${(0,Ts.default)(t.body.updated_at).format(`YYYY/MM/DD HH:mm:ss`)}</b>
+					</p>
+				`,`確認`))return;let a=As(n.includes(r)?i.content:``,this._markdown,this._separator),o=await Os(this._token,this._gist_id,r,a);if(o.status!==200)throw Error(`更新に失敗しました (${o.status})`,{cause:o});await Bd.openAlert(Zo`
+					<p>更新しました</p>
+					<p><a href="${t.body.html_url}" target="_blank">${t.body.html_url}</a></p>
+				`,`成功`)}catch(e){let t=e;console.error(t,t.cause),await Bd.openAlert(Zo`
+					<p>エラーが発生しました</p>
+					<fluent-textarea appearance="filled-darker" .value=${t.message} block readonly></fluent-textarea>
+				`,`エラー`)}}render(){return Zo`
 			<div class="layout">
 				<section class="container top">
 					<div class="settings">
