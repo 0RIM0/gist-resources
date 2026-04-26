@@ -24,3 +24,5 @@ Gist には固定表示みたいな機能がないので、このリポジトリ
     - Short
     - 1 記事を書くほどでもない内容をまとめるところ
     - Bluesky とかの代わり
+    - [Viewer](https://0rim0.github.io/gist-resources/gists/09f81b45220fdc27eee1f32221b391e8/#c95b4f31ab3e6b9c0fcc302131d06eb8)
+    - [Writer](https://0rim0.github.io/gist-resources/gists/8c1d8484bfbb513ebfccce929102c147/)
