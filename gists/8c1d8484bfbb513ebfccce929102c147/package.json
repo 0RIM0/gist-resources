@@ -1,0 +1,27 @@
+{
+  "name": "gist-append",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host --port 3000",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "format": "oxfmt src/"
+  },
+  "dependencies": {
+    "@fluentui/tokens": "1.0.0-alpha.23",
+    "@fluentui/web-components": "^3.0.0-rc.13",
+    "dayjs": "^1.11.20",
+    "lit": "^3.3.2",
+    "markdown-it": "^14.1.1"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.46.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.0"
+  },
+  "overrides": {
+    "vite": "^8.0.0"
+  }
+}

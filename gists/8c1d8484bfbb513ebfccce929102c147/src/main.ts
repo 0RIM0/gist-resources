@@ -1,0 +1,15 @@
+import "@fluentui/web-components/button.js"
+import "@fluentui/web-components/text-input.js"
+import "@fluentui/web-components/radio.js"
+import "@fluentui/web-components/radio-group.js"
+import "@fluentui/web-components/field.js"
+import "@fluentui/web-components/checkbox.js"
+import "@fluentui/web-components/textarea.js"
+import "@fluentui/web-components/dialog.js"
+import "@fluentui/web-components/dialog-body.js"
+import "@fluentui/web-components/tooltip.js"
+import "./gist-append"
+
+import { setTheme } from "@fluentui/web-components"
+import { webLightTheme } from "@fluentui/tokens"
+setTheme(webLightTheme)
