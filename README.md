@@ -15,14 +15,16 @@ Gist には固定表示みたいな機能がないので、このリポジトリ
 
 - [https://gist.github.com/0RIM0/eaad5bc5d5d8ca82c4f3d448f82d66ce](https://gist.github.com/0RIM0/eaad5bc5d5d8ca82c4f3d448f82d66ce)
     - Gist の検索機能
-    - Gist に投稿した markdown ファイルの本文を検索できるようにした時の Gist 記事
-    - 詳細はリンク参照
-    - データはたまに手動更新なので最新の Gist 分は含まれてない
-    - [検索ページ直リンク](https://0rim0.github.io/gist-resources/gists/eaad5bc5d5d8ca82c4f3d448f82d66ce/?data=https%3A%2F%2Fgist.githubusercontent.com%2F0RIM0%2Fda7ad2df2af327698db92711bfce11b1%2Fraw%2Fgist-data.zst)
+    - 現在は[別リポジトリ](https://github.com/0RIM0/gist-search)に移動
 
 - [https://gist.github.com/0RIM0/c95b4f31ab3e6b9c0fcc302131d06eb8](https://gist.github.com/0RIM0/c95b4f31ab3e6b9c0fcc302131d06eb8)
-    - Short
-    - 1 記事を書くほどでもない内容をまとめるところ
-    - Bluesky とかの代わり
+    - 1 つの Gist を作るまでもない内容をまとめて書くところ (Bluesky とかの代わり)
     - [Viewer](https://0rim0.github.io/gist-resources/gists/09f81b45220fdc27eee1f32221b391e8/#c95b4f31ab3e6b9c0fcc302131d06eb8)
     - [Writer](https://0rim0.github.io/gist-resources/gists/8c1d8484bfbb513ebfccce929102c147/)
+
+## Gist Tools
+
+- [Gist Search](https://github.com/0RIM0/gist-search)
+  - Gist の検索機能
+- [Gist Pages](https://github.com/0RIM0/gist-pages)
+  - Gist のファイルを Pages のように表示
