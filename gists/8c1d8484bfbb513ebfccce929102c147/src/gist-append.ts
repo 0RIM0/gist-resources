@@ -78,7 +78,8 @@ export class GistAppend extends LitElement {
 			}
 
 			.pane {
-				flex: 1;
+				flex: 1 1 0;
+				min-width: 0;
 
 				markdown-editor,
 				markdown-preview {
