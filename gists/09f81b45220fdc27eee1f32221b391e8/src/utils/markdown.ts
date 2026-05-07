@@ -1,5 +1,6 @@
 import { marked } from "marked"
 import { createHighlighterCore } from "shiki/core"
+import markedAlert from "marked-alert"
 import markedShiki from "marked-shiki"
 import { createOnigurumaEngine } from "shiki/engine/oniguruma"
 import githubLightDefault from "@shikijs/themes/github-light-default"
@@ -14,6 +15,7 @@ const highlighter = await createHighlighterCore({
 
 marked.use(
 	{ gfm: true },
+	markedAlert(),
 	markedShiki({
 		async highlight(code, lang) {
 			if (lang && !highlighter.getLoadedLanguages().includes(lang)) {
