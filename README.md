@@ -22,9 +22,12 @@ Gist には固定表示みたいな機能がないので、このリポジトリ
     - [Viewer](https://0rim0.github.io/gist-resources/gists/09f81b45220fdc27eee1f32221b391e8/#c95b4f31ab3e6b9c0fcc302131d06eb8)
     - [Writer](https://0rim0.github.io/gist-resources/gists/8c1d8484bfbb513ebfccce929102c147/)
 
+- [https://gist.github.com/0RIM0/5171192a37f6e7915f74e1c675dd0ab0](https://gist.github.com/0RIM0/5171192a37f6e7915f74e1c675dd0ab0)
+    - Gist のバックアップ
+
 ## Gist Tools
 
-- [Gist Search](https://github.com/0RIM0/gist-search)
+- [Gist Search](https://0rim0.github.io/gist-search/?data=gist-data.zst) （[リポジトリ](https://github.com/0RIM0/gist-search)）
   - Gist の検索機能
-- [Gist Pages](https://github.com/0RIM0/gist-pages)
+- [Gist Pages](https://0rim0.github.io/gist-pages/) （[リポジトリ](https://github.com/0RIM0/gist-pages)）
   - Gist のファイルを Pages のように表示
