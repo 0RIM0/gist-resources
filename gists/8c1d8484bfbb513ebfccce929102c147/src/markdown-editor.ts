@@ -78,7 +78,7 @@ export class MarkdownEditor extends LitElement {
 	private async _applyFileContent(handle: FileSystemFileHandle) {
 		const file = await handle.getFile()
 		const text = await file.text()
-		this.value = text
+		this.value = text.replaceAll("\r\n", "\n")
 		this._scheduleEmit()
 	}
 
