@@ -1,0 +1,11 @@
+[project]
+name = "py-wasmer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "wasmer>=1.1.0",
+    "wasmer-compiler-cranelift>=1.1.0",
+    "wasmer-compiler-llvm>=1.1.0",
+]

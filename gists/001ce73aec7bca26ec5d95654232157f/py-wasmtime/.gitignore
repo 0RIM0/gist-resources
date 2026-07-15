@@ -1,0 +1,11 @@
+# 仮想環境（uvが作成するもの）
+.venv/
+
+# uvのキャッシュ
+.uv/
+
+# Pythonのキャッシュ
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
