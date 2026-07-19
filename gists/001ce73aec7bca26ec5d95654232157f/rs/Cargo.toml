@@ -1,0 +1,13 @@
+[package]
+name = "rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+[profile.fast]
+inherits = "release"     # 通常のreleaseプロファイルの設定を引き継ぐ
+opt-level = 3            # 最高レベルの最適化
+lto = true               # リンク時最適化
+codegen-units = 1        # 最適化の質を最大化
+panic = "abort"          # パニック時の展開を無効化

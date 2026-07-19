@@ -2,3 +2,4 @@
 node = "latest"
 uv = "latest"
 rust = "latest"
+go = "latest"
