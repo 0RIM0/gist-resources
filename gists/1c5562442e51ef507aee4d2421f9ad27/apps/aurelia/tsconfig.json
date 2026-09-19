@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"skipLibCheck": true,
+		"target": "esnext",
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"importHelpers": true,
+		"sourceMap": true,
+		"noEmit": true,
+		"strictNullChecks": false
+	},
+	"include": ["src", "vite.config.ts"]
+}

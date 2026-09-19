@@ -1,0 +1,19 @@
+{
+	"name": "hyperhtml",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vp dev",
+		"build": "vp build",
+		"preview": "vp preview"
+	},
+	"dependencies": {
+		"hyperhtml": "^2.34.2",
+		"shared": "workspace:*"
+	},
+	"devDependencies": {
+		"vite": "catalog:",
+		"vite-plus": "catalog:"
+	}
+}

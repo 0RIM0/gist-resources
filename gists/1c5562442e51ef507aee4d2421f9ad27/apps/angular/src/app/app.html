@@ -1,0 +1,14 @@
+@if (state(); as st) {
+	<div>
+		<header>
+			<h1>Angular</h1>
+			<button (click)="onClear()">クリア</button>
+		</header>
+		<main>
+			<check-first [state]="st" (state_change)="updateState($event)"></check-first>
+			<radio-first [state]="st" (state_change)="updateState($event)"></radio-first>
+		</main>
+	</div>
+} @else {
+	<div>Loading...</div>
+}

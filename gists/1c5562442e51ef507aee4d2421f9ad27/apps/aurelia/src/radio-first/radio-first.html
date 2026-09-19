@@ -1,0 +1,12 @@
+<section change.trigger="onChange($event)">
+	<div class="row" repeat.for="item of list; key.bind: item.id">
+		<input type="radio" checked.bind="state.radio" value.bind="item.id" />
+		<input
+			type="checkbox"
+			checked.bind="state.checks.includes(item.id)"
+			disabled.bind="state.radio === item.id"
+			value.bind="item.id"
+		/>
+		<label>${ item.label }</label>
+	</div>
+</section>

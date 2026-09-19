@@ -1,0 +1,23 @@
+{
+	"name": "solid",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vp dev",
+		"build": "tsc -b && vp build",
+		"preview": "vp preview"
+	},
+	"dependencies": {
+		"@solidjs/web": "^2.0.0-rc.8",
+		"shared": "workspace:*",
+		"solid-js": "^2.0.0-rc.8"
+	},
+	"devDependencies": {
+		"@solidjs/vite-plugin": "^3.0.0-next.43",
+		"@types/node": "^24.13.3",
+		"typescript": "~6.0.2",
+		"vite": "catalog:",
+		"vite-plus": "catalog:"
+	}
+}

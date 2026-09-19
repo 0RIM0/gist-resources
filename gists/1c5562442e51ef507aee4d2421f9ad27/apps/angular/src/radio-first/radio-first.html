@@ -1,0 +1,14 @@
+<section (change)="onChange($event)">
+	@for (item of list; track item.id) {
+		<div class="row">
+			<input type="radio" [checked]="isRadio(item)" [value]="item.id" />
+			<input
+				type="checkbox"
+				[checked]="isChecked(item)"
+				[disabled]="isRadio(item)"
+				[value]="item.id"
+			/>
+			<label>{{ item.label }}</label>
+		</div>
+	}
+</section>

@@ -1,0 +1,24 @@
+{
+	"name": "aurelia",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vp dev",
+		"build": "tsc && vp build",
+		"preview": "vp preview"
+	},
+	"dependencies": {
+		"aurelia": "2.0.0-rc.2",
+		"shared": "workspace:*"
+	},
+	"devDependencies": {
+		"@aurelia/kernel": "^2.0.0-rc.2",
+		"@aurelia/metadata": "^2.0.0-rc.2",
+		"@aurelia/runtime-html": "^2.0.0-rc.2",
+		"@aurelia/vite-plugin": "2.0.0-rc.2",
+		"typescript": "~6.0.2",
+		"vite": "catalog:",
+		"vite-plus": "catalog:"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"name": "van",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vp dev",
+		"build": "vp build",
+		"preview": "vp preview"
+	},
+	"dependencies": {
+		"shared": "workspace:*",
+		"vanjs-core": "^1.6.1"
+	},
+	"devDependencies": {
+		"vite": "catalog:",
+		"vite-plus": "catalog:"
+	}
+}

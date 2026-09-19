@@ -1,0 +1,12 @@
+services:
+    frontend:
+        build: .
+        ports:
+            - "3000-3015:3000-3015"
+        volumes:
+            - .:/work
+        working_dir: /work
+        entrypoint: ["sleep", "infinity"]
+        user: "node"
+        stdin_open: true
+        tty: true

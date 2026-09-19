@@ -1,0 +1,20 @@
+<import from="../check-first/check-first"></import>
+<import from="../radio-first/radio-first"></import>
+
+<div if.bind="state == null">Loading...</div>
+<div else>
+	<header>
+		<h1>Aurelia</h1>
+		<button click.trigger="onClear()">クリア</button>
+	</header>
+	<main>
+		<check-first
+			state.bind="state"
+			on-state-change.bind="state => updateState(state)"
+		></check-first>
+		<radio-first
+			state.bind="state"
+			on-state-change.bind="state => updateState(state)"
+		></radio-first>
+	</main>
+</div>
