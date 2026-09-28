@@ -1,0 +1,11 @@
+services:
+  elm:
+    build: .
+    volumes:
+      - .:/work
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    init: true
+    command: elm-live src/Main.elm --host 0.0.0.0 -s index.html -- --output main.js

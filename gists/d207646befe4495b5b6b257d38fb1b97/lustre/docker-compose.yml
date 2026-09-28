@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/work
+    ports:
+      - "1234:1234"
+    init: true
+    stdin_open: true
+    tty: true
+    command: gleam run -m lustre/dev start app
