@@ -1,0 +1,38 @@
+{
+	"name": "ripple",
+	"version": "1.0.0",
+	"description": "A Ripple application created with create-ripple",
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"start": "vp dev",
+		"dev": "vp dev",
+		"build": "vp build",
+		"lint": "eslint .",
+		"typecheck": "tsrx-tsc --noEmit",
+		"serve": "vp preview",
+		"format": "prettier --write .",
+		"format:check": "prettier --check ."
+	},
+	"dependencies": {
+		"ripple": "latest",
+		"shared": "workspace:*"
+	},
+	"devDependencies": {
+		"@ripple-ts/vite-plugin": "latest",
+		"@tsrx/eslint-parser": "latest",
+		"@tsrx/eslint-plugin": "latest",
+		"@tsrx/language-server": "latest",
+		"@tsrx/prettier-plugin": "latest",
+		"@tsrx/typescript-plugin": "latest",
+		"eslint": "^10.0.0",
+		"prettier": "^3.6.2",
+		"typescript": "^5.9.3",
+		"vite": "catalog:",
+		"vite-plus": "catalog:"
+	},
+	"engines": {
+		"node": ">=22.0.0"
+	},
+	"packageManager": "pnpm@11.22.0"
+}

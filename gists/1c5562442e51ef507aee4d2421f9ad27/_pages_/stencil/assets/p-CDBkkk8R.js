@@ -1,0 +1,1 @@
+const s=(async()=>{})||(()=>{});export{s as g}

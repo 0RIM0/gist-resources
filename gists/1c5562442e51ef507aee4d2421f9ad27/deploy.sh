@@ -15,9 +15,9 @@ sub_apps=(
   uhtml
   van
   aurelia
-#  stencil
+  stencil
   arrow
-#  ripple
+  ripple
   vanilla
 )
 

@@ -1,0 +1,19 @@
+{
+	"name": "stencil",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Stencil App Starter",
+	"scripts": {
+		"build": "stencil build",
+		"start": "stencil build --dev --watch --serve",
+		"generate": "stencil generate"
+	},
+	"dependencies": {
+		"@stencil/core": "^4.45.1",
+		"shared": "workspace:*",
+		"typescript": "^7.0.2"
+	},
+	"devDependencies": {
+		"http-proxy": "^1.18.1"
+	}
+}
