@@ -1,0 +1,12 @@
+.app {
+	width: 600px;
+	margin: 10px auto;
+	display: flex;
+	flex-flow: column;
+	gap: 20px;
+}
+
+.row {
+	display: flex;
+	gap: 20px;
+}

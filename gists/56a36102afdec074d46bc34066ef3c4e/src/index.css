@@ -1,0 +1,149 @@
+/* ==========================================================================
+   Modern CSS Defaults & Helpful Primitives
+   (歴史的互換性のためにデフォルトになっていない、入れておくと便利な現代CSS)
+   ========================================================================== */
+
+/* 1. 全要素の box-sizing と最小幅バグ防止 */
+*,
+*::before,
+*::after {
+	/* 従来のコンテンツ幅計算ではなくパディング・ボーダーを含める */
+	box-sizing: border-box;
+
+	/* Flex/Gridの子要素が意図せず親を突き破る現象 (min-width: auto) を防止 */
+	min-width: 0;
+}
+
+/* 2. ルート & レンダリング・アニメーション基盤 */
+:root {
+	/* height: auto や width: max-content などキーワード値への滑らかな transition を有効化 */
+	interpolate-size: allow-keywords;
+
+	/* フォームコントロール（チェックボックス、ラジオ、スクロールバー等）をOSのダークモードと同期 */
+	color-scheme: light dark;
+
+	/* スクロールバーの出現/消失による横揺れ（レイアウトシフト）を防止 */
+	scrollbar-gutter: stable;
+
+	/* モダンなカラーパレットやグラデーションで色が濁らない広色域カラー補間 */
+	color-interpolation: oklab;
+}
+
+html {
+	/* アンカーリンク等でのスムーススクロール */
+	scroll-behavior: smooth;
+
+	/* スマホ等のテキスト自動拡大を防止 */
+	-webkit-text-size-adjust: 100%;
+
+	/* フォントのアンチエイリアス処理 */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	/* モバイルブラウザのアドレスバー伸縮によるスクロールカクつき・はみ出しを防ぐ動的ビューポート高 */
+	min-height: 100dvh;
+	line-height: 1.5;
+
+	/* モーダルやドロワー表示時に背面のスクロール連動を抑止しやすくする */
+	overscroll-behavior-y: none;
+
+	/* モダンなシステムフォント */
+	font-family:
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		Roboto,
+		sans-serif;
+	text-rendering: optimizeLegibility;
+}
+
+/* 3. モーダル・ポップオーバー・開閉要素のモダンアニメーション基盤 */
+/* display: none や popover, <dialog> の開閉アニメーションをスムーズにする */
+[popover],
+dialog {
+	transition-behavior: allow-discrete;
+}
+
+/* 4. メディア要素のレスポンシブ & レンダリング最適化 */
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+/* 画面外の要素のレイアウト計算をスキップして初期レンダリングを高速化する下地 */
+[loading="lazy"],
+img[loading="lazy"] {
+	content-visibility: auto;
+}
+
+/* 5. タイポグラフィ・テキスト折り返しの近代化 */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	/* 長い英単語やURLでの意図しないはみ出し・横スクロールを防止 */
+	overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	/* 見出しの末尾1文字だけが次の行に落ちる「孤立行」を自動防止 */
+	text-wrap: balance;
+}
+
+p {
+	/* 段落全体の行長バランスを最適化し読みやすくする */
+	text-wrap: pretty;
+}
+
+/* 6. フォーム要素の近代化 */
+input,
+button,
+textarea,
+select {
+	font: inherit;
+	color: inherit;
+}
+
+/* textarea が入力内容に応じて自動で高さ伸縮する（対応ブラウザ向け） */
+textarea {
+	field-sizing: content;
+	resize: vertical;
+}
+
+/* 7. スクロールスナップや fixed ヘッダー対策 */
+:target {
+	/* 固定ヘッダーにアンカーリンクが被るのを防ぐ余白のデフォルト */
+	scroll-margin-block-start: 2rem;
+}
+
+/* 8. アニメーション軽減（ユーザーのOSアクセシビリティ設定を尊重） */
+@media (prefers-reduced-motion: reduce) {
+	html:focus-within {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

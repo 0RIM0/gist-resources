@@ -1,0 +1,7 @@
+.calendar {
+	color: black;
+	background-color: white;
+	padding: 20px;
+	display: grid;
+	place-items: center;
+}
