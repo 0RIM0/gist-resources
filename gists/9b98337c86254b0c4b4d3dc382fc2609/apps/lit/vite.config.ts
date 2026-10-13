@@ -1,0 +1,14 @@
+import { defineConfig } from "vite-plus"
+
+export default defineConfig({
+	base: "",
+	server: {
+		port: 3000,
+		host: true,
+	},
+	lint: {
+		rules: {
+			"typescript/unbound-method": "off",
+		},
+	},
+})
