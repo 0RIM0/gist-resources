@@ -1,0 +1,23 @@
+{
+	"name": "monorepo",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build-all": "bash deploy.sh"
+	},
+	"devDependencies": {
+		"vite": "catalog:",
+		"vite-plus": "catalog:"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "11.22.0",
+			"onFail": "download"
+		}
+	},
+	"engines": {
+		"node": ">=22.18.0"
+	}
+}

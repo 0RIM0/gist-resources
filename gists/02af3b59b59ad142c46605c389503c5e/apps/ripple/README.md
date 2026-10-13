@@ -1,0 +1,49 @@
+# Ripple Basic Template
+
+A minimal Ripple application template with TypeScript and Vite.
+
+## Getting Started
+
+1. Install dependencies:
+
+    ```bash
+    npm install # or pnpm or yarn
+    ```
+
+2. Start the development server:
+
+    ```bash
+    npm run dev
+    ```
+
+3. Build for production:
+    ```bash
+    npm run build
+    ```
+
+## Code Formatting
+
+This template includes Prettier with the Ripple plugin for consistent code formatting.
+
+### Available Commands
+
+- `npm run format` - Format all files
+- `npm run format:check` - Check if files are formatted correctly
+
+### Configuration
+
+Prettier is configured in `.prettierrc` with the following settings:
+
+- Uses tabs for indentation
+- Single quotes for strings
+- 100 character line width
+- Includes the `@tsrx/prettier-plugin` for `.tsrx` file formatting
+
+### VS Code Integration
+
+For the best development experience, install the [Prettier VS Code plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and [TSRX Syntax for VS Code](https://marketplace.visualstudio.com/items?itemName=TSRX.tsrx-vscode-plugin).
+
+## Learn More
+
+- [Ripple Documentation](https://www.ripple-ts.com)
+- [Vite Documentation](https://vitejs.dev/)

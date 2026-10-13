@@ -1,0 +1,20 @@
+<div>
+	<p>
+		flag is
+		@if (flag()) {
+			<span class="on">on</span>
+		} @else {
+			<span class="off">off</span>
+		}
+	</p>
+	<button (click)="toggle()">toggle</button>
+	<hr />
+	<ul>
+		@for (item of items(); track item.id) {
+			<li>
+				<span>{{ item.name }}</span>
+				<button (click)="toLast($index)">last</button>
+			</li>
+		}
+	</ul>
+</div>
